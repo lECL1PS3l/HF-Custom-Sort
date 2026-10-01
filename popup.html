@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>body { width: 240px; font: 14px system-ui, sans-serif; padding: 10px; }
+    button { margin-top: 8px; width: 100%; padding: 6px; cursor: pointer; }
+    p { font-size: 11px; color: #888; margin: 8px 0 0; line-height: 1.3; }
+    #lang { width: auto; margin-top: 8px; }</style>
+</head>
+<body>
+  <label style="display:flex; align-items:center; gap:8px;">
+    <input type="checkbox" id="on" />
+    <span id="on-label">Enabled</span>
+  </label>
+  <button id="reload">⟳ Reload current tab</button>
+  <button id="lang" title="Русский"></button>
+  <style>#lang { width: auto; margin-top: 8px; display: inline-flex; align-items: center; }
+    #lang svg { display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgba(128,128,128,.35); }</style>
+  <p id="hint">A Hugging Face tab opened before installing or updating the extension will not see it — reload it with this button (or F5).</p>
+  <script src="popup.js"></script>
+</body>
+</html>
