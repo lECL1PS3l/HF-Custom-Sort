@@ -22,13 +22,21 @@ Estimates VRAM/RAM requirements for your exact hardware on every model card, mar
 
 ### Screenshots
 
-| Panel with fit verdicts | Pick best for your GPU |
-|---|---|
-| <img src="screens/store-1-panel.png" width="800"> | <img src="screens/store-2-best.png" width="800"> |
+**Panel with fit verdicts**
 
-| Compare up to 3 models | License mini-guide |
-|---|---|
-| <img src="screens/store-3-compare.png" width="800"> | <img src="screens/store-4-licenses.png" width="800"> |
+<img src="screens/01-panel.png" width="800" alt="Model list panel with GPU picker, VRAM and RAM fields, context slider, filters and sorting">
+
+**Pick best for your GPU**
+
+<img src="screens/02-best.png" width="800" alt="Pick best dialog: top-5 models that fit the selected hardware, with ollama pull commands">
+
+**Compare up to 3 models**
+
+<img src="screens/03-compare.png" width="800" alt="Comparison table of three models across ten metrics">
+
+**License mini-guide**
+
+<img src="screens/04-licenses.png" width="800" alt="License mini-guide explaining twelve licenses in plain language">
 
 ### Features
 
@@ -139,13 +147,17 @@ MIT — see [LICENSE](LICENSE).
 <a id="russian"></a>
 ## Русский
 
-Расширение для `huggingface.co/models`, которое отвечает на вопрос, которого нет у самого сайта: **влезет ли эта модель в вашу видеокарту**. Оно показывает вердикт на каждой карточке, добавляет фильтры, сортировку, бейджи совместимости, глоссарий, сравнение моделей и подбор топ-5 под ваше железо.
+> ⚠️ **Не связано с Hugging Face.** Независимое расширение для публичного сайта `huggingface.co`; названия и товарные знаки принадлежат их владельцам.
 
-Интерфейс по умолчанию английский, русский включается кликом по флагу в панели или в popup.
+### Что это
+
+Расширение для `huggingface.co/models`, которое отвечает на вопрос, которого нет у самого сайта: **влезет ли эта модель в вашу видеокарту**. Оно показывает вердикт на каждой карточке, добавляет фильтры, сортировку, бейджи совместимости, глоссарий, сравнение моделей и подбор топ-5 под ваше железо. Интерфейс по умолчанию английский, русский включается кликом по флагу.
 
 ### Скриншоты
 
-<img src="screens/store-5-ru.png" width="800" alt="Русский интерфейс">
+**Русский интерфейс**
+
+<img src="screens/ru-01-panel.png" width="800" alt="Панель с вердиктами на русском языке">
 
 ### Возможности
 
@@ -165,8 +177,16 @@ MIT — see [LICENSE](LICENSE).
 
 ### Как это работает
 
+Размер модели в квантизации (Q4_K_M ≈ 4.8 бит на параметр, Q8_0 ≈ 8.5, плюс ~10% накладных):
+
 $$\text{VRAM}_{Q4} \approx \text{params} \times \frac{4.8}{8} \times 1.1$$
+
+KV-кэш растёт с длиной контекста и добавляется к вердикту (приблизительно, fp16):
+
 $$\text{KV} \approx 0.02 \times \text{params}^{0.7} \times \text{context}_{1K}$$
+
+Итоговая проверка против вашей видеопамяти:
+
 $$\text{Total} = \text{VRAM}_{Q4} + \text{KV} + 1\,\text{ГБ (система)}$$
 
 Модели в safetensors оцениваются по полным весам (fp16) — так же, как считает сам Hugging Face; в подсказке указан вариант в GGUF Q4.
@@ -183,6 +203,61 @@ $$\text{Total} = \text{VRAM}_{Q4} + \text{KV} + 1\,\text{ГБ (система)}$
 - Настройки хранятся локально (`chrome.storage`).
 - Сеть — только к `huggingface.co` (публичный API, кэш 7 дней, без массовых запросов).
 - Разрешения: только `storage` и `https://huggingface.co/*`; удалённого кода нет.
+
+### FAQ
+
+<details>
+<summary><b>Почему бейдж говорит «не влезает», хотя памяти хватает?</b></summary>
+
+Вердикт учитывает KV-кэш (растёт с длиной контекста) и ~1 ГБ накладных расходов сверх весов. Уменьшите контекст ползунком — вердикт пересчитается сразу.
+</details>
+
+<details>
+<summary><b>Почему модель помечена «GPU ✗ · CPU/RAM медленно»?</b></summary>
+
+В видеопамять не влезает, но влезает в системную как GGUF-модель — она запустится, просто медленно (обычно несколько токенов в секунду).
+</details>
+
+<details>
+<summary><b>Почему сайт показывает ✗, а расширение ✓ (или наоборот)?</b></summary>
+
+Сайт считает «сырые» веса (полная точность), а расширение — тот самый GGUF-квант, который вы скачаете. В подсказке показаны оба числа.
+</details>
+
+<details>
+<summary><b>Работает ли на всех страницах моделей?</b></summary>
+
+Работает на страницах списков моделей (`huggingface.co/models`), включая поиск и фильтры. Страницы датасетов и Spaces не охвачены.
+</details>
+
+### Известные ограничения
+
+<details>
+<summary><b>Приближения, о которых стоит знать</b></summary>
+
+- Оценки размеров приблизительные: `params × бит/8 × 1.1`; коэффициент KV-кэша откалиброван по реальным моделям 7B–70B.
+- Оценки лидерборда взяты из замороженного датасета `open-llm-leaderboard/contents` (отправки 2024 года); дата снимка указана в подсказке.
+- Мини-БД моделей — отобранный вручную список; обновляется скриптом `node tools/refresh-benchmarks.mjs` (агентский инструмент).
+- Загрузки и лицензии берутся из публичного API Hugging Face; при отсутствии данных показывается «?», а не догадка.
+</details>
+
+### Разработка
+
+Без сборки и зависимостей — чистый JavaScript (MV3).
+
+```
+lib/core.js   чистые расчёты: парсинг, размеры, вердикты (покрыты тестами)
+lib/api.js    API Hugging Face + кэш + дедуп запросов
+lib/i18n.js   словари EN/RU
+lib/ui.js     DOM-слой: панель, бейджи, сравнение, модалки
+data/         пресеты видеокарт, глоссарий и лицензии, мини-БД моделей
+content.js    точка входа
+```
+
+```bash
+node --test                        # 31 тест
+node tools/refresh-benchmarks.mjs 46
+```
 
 ### Лицензия
 
