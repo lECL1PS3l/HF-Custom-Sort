@@ -30,8 +30,6 @@ Estimates VRAM/RAM requirements for your exact hardware on every model card, mar
 |---|---|
 | <img src="screens/store-3-compare.png" width="800"> | <img src="screens/store-4-licenses.png" width="800"> |
 
-<img src="screens/store-5-ru.png" width="800" alt="Russian interface">
-
 ### Features
 
 | Feature | What it does |
@@ -144,6 +142,10 @@ MIT — see [LICENSE](LICENSE).
 Расширение для `huggingface.co/models`, которое отвечает на вопрос, которого нет у самого сайта: **влезет ли эта модель в вашу видеокарту**. Оно показывает вердикт на каждой карточке, добавляет фильтры, сортировку, бейджи совместимости, глоссарий, сравнение моделей и подбор топ-5 под ваше железо.
 
 Интерфейс по умолчанию английский, русский включается кликом по флагу в панели или в popup.
+
+### Скриншоты
+
+<img src="screens/store-5-ru.png" width="800" alt="Русский интерфейс">
 
 ### Возможности
 
